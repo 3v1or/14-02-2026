@@ -95,9 +95,10 @@
        #start-story-btn {
     display: none; 
     margin-top: 20px;
-    background: #ffc107; /* Este es el amarillo tipo Tyler/Bee */
-    color: black;        /* Texto negro para que resalte en el amarillo */
+    background: #ff4b6e; /* Un rosa vibrante que combina con el botón "Sí" */
+    color: white;        
     animation: pulse 2s infinite;
+    box-shadow: 0 4px 15px rgba(255, 75, 110, 0.4);
 }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
     </style>
@@ -130,8 +131,8 @@
     </div>
 
     <div id="final-msg">
-        <h1 style="color: #ff4b6e;">Te Amo mi vida ❤️</h1>
-        <p style="color: #ccc;">Te lo hice con mucho amor</p>
+        <h1 style="color: #ff4b6e;">Te Amo ❤️</h1>
+        <p style="color: #ccc;">Hecho con mucho amor de Emi para Mei 14/02/2026</p>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -184,7 +185,7 @@
         function handleYes() {
             confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
             document.getElementById('main-title').innerText = "Sabía que dirías que sí!, digo no es como que te haya obligado";
-            document.getElementById('main-subtitle').innerText = "Ahora tengo algo para ti...";
+            document.getElementById('main-subtitle').innerText = "Ahora tengo algo para ti... sigue el ritmo";
             document.getElementById('initial-buttons').style.display = 'none';
             document.getElementById('start-story-btn').style.display = 'block';
         }
@@ -248,5 +249,6 @@
     </script>
 </body>
 </html>
+
 
 
