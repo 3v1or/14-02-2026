@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para Mei ❤️</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://img.icons8.com/color/480/heart-with-arrow.png">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            background: black;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- ANIMACIÓN DE CORAZONES --- */
+        .bg-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .heart-bg {
+            position: absolute;
+            bottom: -10vh;
+            color: rgba(255, 105, 180, 0.6);
+            text-shadow: 0 0 5px rgba(255, 105, 180, 0.8);
+            animation: floatUp linear infinite, sway ease-in-out infinite alternate;
+        }
+
+        @keyframes floatUp {
+            to {
+                transform: translateY(-120vh);
+            }
+        }
+
+        @keyframes sway {
+            from {
+                margin-left: -15px;
+            }
+
+            to {
+                margin-left: 15px;
+            }
+        }
+
+        /* PANTALLA 1: La Pregunta */
+        #intro-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #fff0f3 0%, #e6e9f0 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            text-align: center;
+        }
+
+        h1 {
+            color: #d63384;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            padding: 0 10px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        #btn-yes {
+            background-color: #ff4b6e;
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 75, 110, 0.4);
+        }
+
+        #btn-no {
+            background-color: white;
+            color: #ff4b6e;
+            position: relative;
+        }
+
+        /* PANTALLA 2: Modo Historia */
+        #story-screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 30;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #story-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out; /* Ajustado para ir mejor con música */
+            filter: brightness(0.7);
+        }
+
+        #story-text {
+            position: absolute;
+            bottom: 15%;
+            width: 90%;
+            text-align: center;
+            color: white;
+            font-family: 'Georgia', serif;
+            font-style: italic;
+            font-size: 1.6rem;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.9);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-out;
+            transform: translateY(20px);
+        }
+
+        .tap-hint {
+            position: absolute;
+            bottom: 20px;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.8rem;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% {
+                opacity: 0.3;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Pantalla Final */
+        #final-msg {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            color: white;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 40;
+            text-align: center;
+        }
+
+        .fade-in {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        #start-story-btn {
+            display: none;
+            margin-top: 20px;
+            background: #1db954;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" preload="auto">
+        <source src="cancion.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="bg-hearts" id="hearts-container"></div>
+
+    <div id="intro-screen">
+        <h1 id="main-title">Hola flaquita hermosaa!! ❤️</h1>
+        <p id="main-subtitle">Te gustaría ser mi San Valentín?</p>
+
+        <div class="buttons" id="initial-buttons">
+            <button id="btn-yes" onclick="handleYes()">Sí!</button>
+            <button id="btn-no" onmouseover="moveButton()" ontouchstart="moveButton()">No, picate el ano</button>
+        </div>
+
+        <button id="start-story-btn" onclick="startStory()">Espero te guste</button>
+    </div>
+
+    <div id="story-screen" onclick="nextSlide()">
+        <img id="story-image" src="" alt="Foto">
+        <div id="story-text"></div>
+        <div class="tap-hint">(Toca la pantalla al ritmo de la canción)</div>
+    </div>
+
+    <div id="final-msg">
+        <h1 style="color: #ff4b6e;">Te Amo mi vida ❤️</h1>
+        <p style="color: #ccc;">Te lo hice con mucho amor</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        // --- ANIMACIÓN DE CORAZONES ---
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart-bg');
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            const size = Math.random() * 2 + 1;
+            heart.style.fontSize = size + 'rem';
+            heart.style.opacity = Math.random() * 0.5 + 0.3;
+            const floatDuration = Math.random() * 5 + 8;
+            const swayDuration = Math.random() * 2 + 2;
+            heart.style.animationDuration = `${floatDuration}s, ${swayDuration}s`;
+            document.getElementById('hearts-container').appendChild(heart);
+            setTimeout(() => { heart.remove(); }, floatDuration * 1000);
+        }
+        setInterval(createHeart, 400);
+
+        // --- CONFIGURACIÓN DE LA HISTORIA (14 FOTOS) ---
+        const storyData = [
+            { text: "You're the one that's always running through my daydream", img: "foto1.jpg" },
+            { text: "I, I can only see your face<br>When I close my eyes, so", img: "foto2.jpg" },
+            { text: "Can I get a kiss?<br>(Can I get a kiss?)", img: "foto3.jpg" },
+            { text: "And can you make it last forever?<br>(Make it last forever)", img: "foto4.jpg" },
+            { text: "I said I'm 'bout to go to war<br>('bout to go to war)", img: "foto5.jpg" },
+            { text: "I don't know if I'ma see you again<br>(see you again)", img: "foto6.jpg" },
+            { text: "Can I get a kiss? (Can I?)", img: "foto7.jpg" },
+            { text: "And can you make it last forever? (Can you?)", img: "foto8.jpg" },
+            { text: "I said I'm 'bout to go to war ('bout to)", img: "foto9.jpg" },
+            { text: "And I don't know if I'ma see you again", img: "foto10.jpg" },
+            { text: "Okay, okay, okay, okay, okay, okay, okay, o-<br>(la-la-la, la-la-la-la-la)", img: "foto11.jpg" },
+            { text: "Okay, okay, okay, okay, okay, okay, okay, o-<br>(la-la-la, la-la-la-la)", img: "foto12.jpg" },
+            { text: "Okay, okay, okay, okay, okay, okay, okay, o-<br>(la-la-la, la-la-la-la-la)", img: "foto13.jpg" },
+            { text: "Okay, okay, okay, okay, okay (la-la-la)<br>One more time? ❤️", img: "foto14.jpg" }
+        ];
+
+        let currentSlide = 0;
+        let isTransitioning = false;
+
+        function moveButton() {
+            const btnNo = document.getElementById('btn-no');
+            const x = Math.random() * (window.innerWidth - btnNo.offsetWidth - 20);
+            const y = Math.random() * (window.innerHeight - btnNo.offsetHeight - 20);
+            btnNo.style.position = 'absolute'; btnNo.style.left = `${x}px`; btnNo.style.top = `${y}px`;
+        }
+
+        function handleYes() {
+            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            document.getElementById('main-title').innerText = "Sabía que dirías que sí!, digo no es como que te haya obligado";
+            document.getElementById('main-subtitle').innerText = "Ahora tengo algo para ti...";
+            document.getElementById('initial-buttons').style.display = 'none';
+            document.getElementById('start-story-btn').style.display = 'block';
+        }
+
+        function startStory() {
+            // REPRODUCIR MÚSICA AL CLIC
+            const audio = document.getElementById('bg-music');
+            audio.play().catch(e => console.log("Error audio:", e));
+
+            document.getElementById('intro-screen').style.display = 'none';
+            document.getElementById('story-screen').style.display = 'flex';
+            showSlide(0);
+        }
+
+        function showSlide(index) {
+            const imgEl = document.getElementById('story-image');
+            const textEl = document.getElementById('story-text');
+            const data = storyData[index];
+
+            imgEl.style.opacity = 0;
+            textEl.classList.remove('fade-in');
+
+            setTimeout(() => {
+                imgEl.src = data.img;
+                textEl.innerHTML = data.text;
+
+                imgEl.onload = () => {
+                    imgEl.style.opacity = 1;
+                    textEl.classList.add('fade-in');
+                    isTransitioning = false;
+                };
+
+                imgEl.onerror = () => {
+                    imgEl.style.opacity = 0.2;
+                    textEl.classList.add('fade-in');
+                    isTransitioning = false;
+                };
+            }, 300); // 300ms es mejor para ir al ritmo de la música
+        }
+
+        function nextSlide() {
+            if (isTransitioning) return;
+            isTransitioning = true;
+
+            currentSlide++;
+
+            if (currentSlide < storyData.length) {
+                showSlide(currentSlide);
+            } else {
+                document.getElementById('story-screen').style.display = 'none';
+                document.getElementById('final-msg').style.display = 'flex';
+                confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+            }
+        }
+    </script>
+</body>
+</html>
